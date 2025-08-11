@@ -1,5 +1,12 @@
 import axios from 'axios'
 
+export const logout = () => {
+  localStorage.removeItem('token')
+  localStorage.removeItem('refresh')
+  localStorage.removeItem('user')
+  window.location.href = '/login'
+}
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 })
@@ -14,21 +21,31 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem('token')
-      window.location.href = '/login'
+  async (error) => {
+    const originalRequest = error.config
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true
+      const refresh = localStorage.getItem('refresh')
+      if (refresh) {
+        try {
+          const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/auth/refresh`, { refresh })
+          localStorage.setItem('token', data.access)
+          originalRequest.headers.Authorization = `Bearer ${data.access}`
+          return api(originalRequest)
+        } catch {
+          logout()
+        }
+      } else {
+        logout()
+      }
     }
     return Promise.reject(error)
   },
 )
 
-export const logout = () => {
-  localStorage.removeItem('token')
-}
-
 export const getCurrentUser = async () => {
   const { data } = await api.get('/users/me')
+  localStorage.setItem('user', JSON.stringify(data))
   return data
 }
 

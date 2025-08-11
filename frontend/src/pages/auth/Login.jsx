@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import api from '../../lib/api.js'
+import api, { getCurrentUser } from '../../lib/api.js'
 import { useToast } from '../../components/Toast.jsx'
 
 export default function Login() {
@@ -14,6 +14,8 @@ export default function Login() {
     try {
       const { data } = await api.post('/auth/login', { username, password })
       localStorage.setItem('token', data.access)
+      if (data.refresh) localStorage.setItem('refresh', data.refresh)
+      await getCurrentUser()
       navigate('/')
     } catch {
       show('Identifiants invalides', 'error')

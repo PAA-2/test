@@ -8,6 +8,7 @@ import ActionDetail from './pages/actions/Detail.jsx'
 import PlansIndex from './pages/plans/Index.jsx'
 import AdminIndex from './pages/admin/Index.jsx'
 import Login from './pages/auth/Login.jsx'
+import Forbidden403 from './pages/errors/Forbidden403.jsx'
 
 function App() {
   return (
@@ -19,8 +20,9 @@ function App() {
         <Route path="/actions/new" element={<ActionCreate />} />
         <Route path="/actions/:actId" element={<ActionDetail />} />
         <Route path="/plans" element={<PlansIndex />} />
-        <Route path="/admin" element={<AdminIndex />} />
+        <Route path="/admin" element={<ProtectedRoute roles={['SuperAdmin']}><AdminIndex /></ProtectedRoute>} />
       </Route>
+      <Route path="/403" element={<Forbidden403 />} />
     </Routes>
   )
 }
