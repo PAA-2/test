@@ -5,6 +5,7 @@ from .views import PlanViewSet, ActionViewSet, ExcelPreview, ExcelRefresh
 from .views_export import ExportExcelView, ExportPdfView
 from .views_stats import DashboardCounters, ProgressChart, ComparePlansChart
 from .views_notify import LateNotifyView, SummaryNotifyView, CustomNotifyView
+from .views_reports import CustomReportView
 
 router = DefaultRouter()
 router.register(r"plans", PlanViewSet)
@@ -22,4 +23,5 @@ urlpatterns = [
     path("notify/late", LateNotifyView.as_view()),
     path("notify/summary", SummaryNotifyView.as_view()),
     path("notify/custom", CustomNotifyView.as_view()),
+    path("reports/custom", CustomReportView.as_view()),
 ]
