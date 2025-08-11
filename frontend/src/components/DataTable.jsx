@@ -7,7 +7,7 @@ export default function DataTable({ columns, rows, page, pageSize, total, onSort
             {columns.map((col) => (
               <th
                 key={col.key}
-                onClick={() => onSort && onSort(col.key)}
+                onClick={() => onSort && col.key && onSort(col.key)}
                 className="cursor-pointer px-3 py-2 text-left text-sm font-medium text-gray-700"
               >
                 {col.label}
@@ -19,8 +19,8 @@ export default function DataTable({ columns, rows, page, pageSize, total, onSort
           {rows.map((row, idx) => (
             <tr key={idx}>
               {columns.map((col) => (
-                <td key={col.key} className="px-3 py-2 text-sm">
-                  {row[col.key]}
+                <td key={col.key || col.label} className="px-3 py-2 text-sm">
+                  {col.render ? col.render(row) : row[col.key]}
                 </td>
               ))}
             </tr>

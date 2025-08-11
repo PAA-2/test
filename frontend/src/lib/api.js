@@ -79,6 +79,24 @@ export const previewPlan = async (id) => {
   return data
 }
 
+let customFieldsSchemaCache = null
+let customFieldsSchemaTs = 0
+export const getCustomFieldsSchema = async () => {
+  const now = Date.now()
+  if (customFieldsSchemaCache && now - customFieldsSchemaTs < 60000) {
+    return customFieldsSchemaCache
+  }
+  const { data } = await api.get('/admin/custom-fields/schema')
+  customFieldsSchemaCache = data
+  customFieldsSchemaTs = now
+  return data
+}
+
+export const listCustomFields = async () => {
+  const { data } = await api.get('/admin/custom-fields')
+  return data
+}
+
 export const getActions = async ({ page = 1, pageSize = 10, ordering = '', filters = {} } = {}) => {
   const params = {
     page,

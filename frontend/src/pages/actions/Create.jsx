@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { createAction } from '../../lib/api.js'
+import { createAction, getCustomFieldsSchema } from '../../lib/api.js'
 import { useToast } from '../../components/Toast.jsx'
+import FormBuilder from '../../components/formbuilder/FormBuilder.jsx'
+import { validateAll } from '../../components/formbuilder/validate.js'
+import Skeleton from '../../components/Skeleton.jsx'
 
 export default function ActionCreate() {
     const [form, setForm] = useState({
@@ -17,6 +20,30 @@ export default function ActionCreate() {
     const navigate = useNavigate()
     const [error, setError] = useState(null)
     const { show } = useToast()
+    const [schema, setSchema] = useState(null)
+    const [customValues, setCustomValues] = useState({})
+    const [customErrors, setCustomErrors] = useState({})
+    const [loadingSchema, setLoadingSchema] = useState(true)
+
+    useEffect(() => {
+      let mounted = true
+      getCustomFieldsSchema()
+        .then((data) => {
+          if (!mounted) return
+          setSchema(data)
+          const initial = {}
+          data.fields?.forEach((f) => {
+            if (f.type === 'tags') initial[f.key] = []
+            else if (f.type === 'bool') initial[f.key] = false
+            else initial[f.key] = ''
+          })
+          setCustomValues(initial)
+        })
+        .finally(() => setLoadingSchema(false))
+      return () => {
+        mounted = false
+      }
+    }, [])
 
     const handleChange = (e) => {
       const { name, value, checked } = e.target
@@ -30,6 +57,17 @@ export default function ActionCreate() {
     const handleSubmit = async (e) => {
       e.preventDefault()
       setError(null)
+      const { errors, isValid } = validateAll(schema, customValues)
+      if (!isValid) {
+        setCustomErrors(errors)
+        show('Erreur de validation', 'error')
+        return
+      }
+      const customPayload = {}
+      Object.entries(customValues).forEach(([k, v]) => {
+        if (v === '' || v === null || (Array.isArray(v) && v.length === 0)) return
+        customPayload[k] = v
+      })
       const payload = {
         titre: form.titre,
         theme: form.theme,
@@ -45,6 +83,7 @@ export default function ActionCreate() {
         c: form.pdca.C,
         a: form.pdca.A,
         commentaire: form.commentaire,
+        custom: customPayload,
       }
       try {
         const data = await createAction(payload)
@@ -52,6 +91,8 @@ export default function ActionCreate() {
         navigate(`/actions/${data.act_id}`)
       } catch (err) {
         if (err.response && err.response.status === 400) {
+          const serverErrors = err.response.data?.errors?.custom || {}
+          setCustomErrors(serverErrors)
           setError('Erreur de validation')
           show('Erreur de validation', 'error')
         } else {
@@ -62,7 +103,8 @@ export default function ActionCreate() {
     }
 
   return (
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label className="block mb-1">Titre</label>
         <input name="titre" value={form.titre} onChange={handleChange} className="w-full border rounded-xl p-2" />
@@ -104,17 +146,29 @@ export default function ActionCreate() {
         <label className="block mb-1">Commentaire</label>
         <textarea name="commentaire" value={form.commentaire} onChange={handleChange} className="w-full border rounded-xl p-2" rows="4" />
       </div>
-        {error && (
-          <div className="md:col-span-2 text-red-600">{error}</div>
-        )}
-        <div className="md:col-span-2 flex gap-2">
-          <button type="button" onClick={() => navigate(-1)} className="rounded-2xl px-4 py-2 bg-gray-200">
-            Annuler
-          </button>
-          <button type="submit" className="rounded-2xl px-4 py-2 bg-blue-600 text-white">
-            Enregistrer
-          </button>
-        </div>
+      </div>
+
+      {loadingSchema && <Skeleton className="h-32" />}
+      {!loadingSchema && schema && (
+        <FormBuilder
+          schema={schema}
+          values={customValues}
+          onChange={(key, val) => {
+            setCustomValues((prev) => ({ ...prev, [key]: val }))
+            setCustomErrors((prev) => ({ ...prev, [key]: undefined }))
+          }}
+          errors={customErrors}
+        />
+      )}
+      {error && <div className="text-red-600">{error}</div>}
+      <div className="flex gap-2">
+        <button type="button" onClick={() => navigate(-1)} className="rounded-2xl px-4 py-2 bg-gray-200">
+          Annuler
+        </button>
+        <button type="submit" className="rounded-2xl px-4 py-2 bg-blue-600 text-white">
+          Enregistrer
+        </button>
+      </div>
     </form>
   )
 }

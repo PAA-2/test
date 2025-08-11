@@ -108,6 +108,15 @@ export default function ActionsList() {
     { key: 'responsables', label: 'Responsables' },
     { key: 'delais', label: 'Délais' },
     { key: 'J', label: 'J' },
+    {
+      key: 'actions',
+      label: '',
+      render: (row) => (
+        <Link to={`/actions/${row.act_id}/edit`} className="text-blue-600">
+          Modifier
+        </Link>
+      ),
+    },
   ]
 
   return (

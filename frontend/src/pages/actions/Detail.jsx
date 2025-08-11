@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
-import { useParams } from 'react-router-dom'
-import api from '../../lib/api.js'
+import { useParams, Link } from 'react-router-dom'
+import api, { getCustomFieldsSchema } from '../../lib/api.js'
 import { useToast } from '../../components/Toast.jsx'
 import useRole from '../../hooks/useRole.js'
 
@@ -13,6 +13,7 @@ export default function ActionDetail() {
   const [motif, setMotif] = useState('')
   const { show } = useToast()
   const { user, hasRole } = useRole()
+  const [schema, setSchema] = useState(null)
 
   const fetchAction = useCallback(() => {
     setLoading(true)
@@ -26,6 +27,10 @@ export default function ActionDetail() {
   useEffect(() => {
     fetchAction()
   }, [fetchAction])
+
+  useEffect(() => {
+    getCustomFieldsSchema().then(setSchema)
+  }, [])
 
   const handleValidate = async () => {
     try {
@@ -104,10 +109,27 @@ export default function ActionDetail() {
       </div>
       {canManage && (
         <div className="flex gap-2">
-          <button className="rounded-2xl px-4 py-2 bg-blue-600 text-white">Modifier</button>
+          <Link to={`/actions/${actId}/edit`} className="rounded-2xl px-4 py-2 bg-blue-600 text-white">Modifier</Link>
           <button onClick={handleValidate} className="rounded-2xl px-4 py-2 bg-green-600 text-white">Valider</button>
           <button onClick={handleClose} className="rounded-2xl px-4 py-2 bg-gray-200">Clôturer</button>
           <button onClick={() => setShowReject(true)} className="rounded-2xl px-4 py-2 bg-red-500 text-white">Rejeter</button>
+        </div>
+      )}
+
+      {schema && action.custom && Object.keys(action.custom).length > 0 && (
+        <div className="space-y-2">
+          <h3 className="text-lg font-semibold">Champs personnalisés</h3>
+          {schema.fields.map((f) => {
+            const val = action.custom[f.key]
+            if (val === undefined) return null
+            let display = Array.isArray(val) ? val.join(', ') : val
+            if (f.type === 'bool') display = val ? 'Oui' : 'Non'
+            return (
+              <p key={f.key}>
+                <strong>{f.label || f.key}:</strong> {display}
+              </p>
+            )
+          })}
         </div>
       )}
 
