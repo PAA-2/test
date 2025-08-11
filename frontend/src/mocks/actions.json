@@ -1,0 +1,20 @@
+[
+  {
+    "act_id": "ACT-0001",
+    "titre": "Action 1",
+    "statut": "En cours",
+    "priorite": "Haute",
+    "responsables": "Alice,Bob",
+    "delais": "2025-01-01",
+    "J": 10
+  },
+  {
+    "act_id": "ACT-0002",
+    "titre": "Action 2",
+    "statut": "Clôturée",
+    "priorite": "Basse",
+    "responsables": "Charlie",
+    "delais": "2025-02-15",
+    "J": 0
+  }
+]
