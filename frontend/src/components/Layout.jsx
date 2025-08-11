@@ -15,6 +15,7 @@ export default function Layout() {
         <Link to="/">Dashboard</Link>
         <Link to="/actions">Actions</Link>
         {hasRole('SuperAdmin', 'PiloteProcessus', 'Pilote') && <Link to="/plans">Plans</Link>}
+        {hasRole('SuperAdmin', 'PiloteProcessus') && <Link to="/reports">Rapports</Link>}
         {hasRole('SuperAdmin') && <Link to="/admin">Admin</Link>}
         <div className="ml-auto flex items-center gap-4">
           {user && <span>{user.username}</span>}

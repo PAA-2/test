@@ -120,4 +120,7 @@ export const exportActionsExcel = (params = {}) =>
 export const exportActionsPdf = (params = {}) =>
   api.get('/export/pdf', { params, responseType: 'blob' })
 
+export const postCustomReport = (payload, { responseType = 'blob' } = {}) =>
+  api.post('/reports/custom', payload, { responseType })
+
 export default api

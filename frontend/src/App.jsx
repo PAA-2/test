@@ -10,6 +10,7 @@ import PlanEdit from './pages/plans/Edit.jsx'
 import AdminIndex from './pages/admin/Index.jsx'
 import Login from './pages/auth/Login.jsx'
 import Forbidden403 from './pages/errors/Forbidden403.jsx'
+import ReportsBuilder from './pages/reports/Builder.jsx'
 
 function App() {
   return (
@@ -31,6 +32,10 @@ function App() {
         <Route
           path="/plans/:planId/edit"
           element={<ProtectedRoute roles={['SuperAdmin', 'PiloteProcessus']}><PlanEdit /></ProtectedRoute>}
+        />
+        <Route
+          path="/reports"
+          element={<ProtectedRoute roles={['SuperAdmin', 'PiloteProcessus', 'Pilote']}><ReportsBuilder /></ProtectedRoute>}
         />
         <Route path="/admin" element={<ProtectedRoute roles={['SuperAdmin']}><AdminIndex /></ProtectedRoute>} />
       </Route>
