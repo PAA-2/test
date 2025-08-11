@@ -1,0 +1,82 @@
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { getPlans } from '../lib/api.js'
+
+export default function StatsFilterBar() {
+  const [params, setParams] = useSearchParams()
+  const [plans, setPlans] = useState([])
+
+  useEffect(() => {
+    getPlans()
+      .then((data) => setPlans(data))
+      .catch(() => setPlans([]))
+  }, [])
+
+  const update = (key) => (e) => {
+    const value = e.target.value
+    if (value) {
+      params.set(key, value)
+    } else {
+      params.delete(key)
+    }
+    setParams(params)
+  }
+
+  const reset = () => setParams({})
+
+  return (
+    <div className="flex flex-wrap gap-2 mb-4">
+      <input
+        type="text"
+        placeholder="Recherche"
+        value={params.get('q') || ''}
+        onChange={update('q')}
+        className="border rounded-xl p-2"
+      />
+      <input
+        type="text"
+        placeholder="Responsable"
+        value={params.get('responsable') || ''}
+        onChange={update('responsable')}
+        className="border rounded-xl p-2"
+      />
+      <select
+        value={params.get('plan') || ''}
+        onChange={update('plan')}
+        className="border rounded-xl p-2"
+      >
+        <option value="">Plan</option>
+        {plans.map((p) => (
+          <option key={p.id} value={p.id}>
+            {p.nom}
+          </option>
+        ))}
+      </select>
+      <select
+        value={params.get('priorite') || ''}
+        onChange={update('priorite')}
+        className="border rounded-xl p-2"
+      >
+        <option value="">Priorité</option>
+        <option value="High">High</option>
+        <option value="Med">Med</option>
+        <option value="Low">Low</option>
+      </select>
+      <input
+        type="month"
+        value={params.get('from') || ''}
+        onChange={update('from')}
+        className="border rounded-xl p-2"
+      />
+      <input
+        type="month"
+        value={params.get('to') || ''}
+        onChange={update('to')}
+        className="border rounded-xl p-2"
+      />
+      <button onClick={reset} className="rounded-2xl px-4 py-2 bg-gray-200">
+        Réinitialiser
+      </button>
+    </div>
+  )
+}

@@ -99,4 +99,19 @@ export const createAction = async (payload) => {
   return data
 }
 
+export const getCounters = async (params = {}, signal) => {
+  const { data } = await api.get('/dashboard/counters', { params, signal })
+  return data
+}
+
+export const getProgress = async (params = {}, signal) => {
+  const { data } = await api.get('/charts/progress', { params, signal })
+  return data
+}
+
+export const getComparePlans = async (params = {}, signal) => {
+  const { data } = await api.get('/charts/compare-plans', { params, signal })
+  return data
+}
+
 export default api
