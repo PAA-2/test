@@ -49,8 +49,8 @@ export const getCurrentUser = async () => {
   return data
 }
 
-export const getPlans = async () => {
-  const { data } = await api.get('/plans')
+export const getPlans = async (params = {}) => {
+  const { data } = await api.get('/plans', { params })
   return data
 }
 

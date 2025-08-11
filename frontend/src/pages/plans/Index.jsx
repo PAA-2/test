@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import DataTable from '../../components/DataTable.jsx'
 import { getPlans, rescanPlan, previewPlan } from '../../lib/api.js'
 import useRole from '../../hooks/useRole.js'
 import { useToast } from '../../components/Toast.jsx'
@@ -11,19 +12,22 @@ export default function PlansIndex() {
   const [previewLoading, setPreviewLoading] = useState(false)
   const { user, hasRole } = useRole()
   const { show } = useToast()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const q = searchParams.get('q') || ''
 
   useEffect(() => {
-    getPlans()
+    setLoading(true)
+    getPlans(q ? { q } : {})
       .then((data) => {
         let items = data
-        if (hasRole('Pilote')) {
+        if (hasRole('Pilote', 'Utilisateur')) {
           items = items.filter((p) => user.plans_autorises.includes(p.id))
         }
         setPlans(items)
       })
       .catch(() => show('Erreur de chargement', 'error'))
       .finally(() => setLoading(false))
-  }, [user, hasRole, show])
+  }, [user, hasRole, show, q])
 
   const handleRescan = async (id) => {
     try {
@@ -39,7 +43,10 @@ export default function PlansIndex() {
     setPreview(null)
     try {
       const data = await previewPlan(id)
-      setPreview(data)
+      const rows = data.rows || []
+      const headers = rows.length ? Object.keys(rows[0]) : []
+      const mappedRows = rows.map((r) => headers.map((h) => r[h]))
+      setPreview({ headers, rows: mappedRows })
     } catch {
       show('Erreur preview', 'error')
     } finally {
@@ -47,17 +54,76 @@ export default function PlansIndex() {
     }
   }
 
+  const columns = [
+    { key: 'nom', label: 'Nom' },
+    {
+      key: 'excel_path',
+      label: 'Chemin',
+      render: (row) => <span className="break-all">{row.excel_path}</span>,
+    },
+    { key: 'excel_sheet', label: 'Feuille' },
+    { key: 'header_row_index', label: 'Ligne entête' },
+    { key: 'actif', label: 'Actif', render: (row) => (row.actif ? 'Oui' : 'Non') },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (row) => (
+        <div className="space-x-2">
+          {hasRole('SuperAdmin', 'PiloteProcessus') && (
+            <Link
+              to={`/plans/${row.id}/edit`}
+              className="px-2 py-1 bg-yellow-400 rounded-2xl"
+            >
+              Éditer
+            </Link>
+          )}
+          {hasRole('SuperAdmin', 'PiloteProcessus') && (
+            <button
+              onClick={() => handleRescan(row.id)}
+              className="px-2 py-1 bg-purple-500 text-white rounded-2xl"
+            >
+              Rescan
+            </button>
+          )}
+          {(hasRole('SuperAdmin', 'PiloteProcessus') ||
+            (hasRole('Pilote') && user.plans_autorises.includes(row.id))) && (
+            <button
+              onClick={() => handlePreview(row.id)}
+              className="px-2 py-1 bg-green-500 text-white rounded-2xl"
+            >
+              Preview
+            </button>
+          )}
+        </div>
+      ),
+    },
+  ]
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Plans</h2>
         {hasRole('SuperAdmin', 'PiloteProcessus') && (
-          <Link
-            to="/plans/new"
-            className="bg-blue-600 text-white rounded-2xl px-4 py-2"
-          >
+          <Link to="/plans/new" className="bg-blue-600 text-white rounded-2xl px-4 py-2">
             Ajouter
           </Link>
+        )}
+      </div>
+      <div className="mb-4 flex items-center gap-2">
+        <input
+          type="text"
+          value={q}
+          onChange={(e) => setSearchParams(e.target.value ? { q: e.target.value } : {})}
+          placeholder="Rechercher"
+          className="border p-2 rounded-xl"
+        />
+        {q && (
+          <button
+            onClick={() => setSearchParams({})}
+            className="px-3 py-2 rounded-2xl border"
+          >
+            Réinitialiser
+          </button>
         )}
       </div>
       {loading ? (
@@ -66,57 +132,16 @@ export default function PlansIndex() {
           <div className="h-6 bg-gray-200 rounded" />
           <div className="h-6 bg-gray-200 rounded" />
         </div>
+      ) : plans.length ? (
+        <DataTable
+          columns={columns}
+          rows={plans}
+          page={1}
+          pageSize={plans.length || 1}
+          total={plans.length}
+        />
       ) : (
-        <table className="min-w-full bg-white rounded-2xl shadow">
-          <thead>
-            <tr className="text-left border-b">
-              <th className="p-2">Nom</th>
-              <th className="p-2">Chemin</th>
-              <th className="p-2">Feuille</th>
-              <th className="p-2">Ligne entête</th>
-              <th className="p-2">Actif</th>
-              <th className="p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {plans.map((plan) => (
-              <tr key={plan.id} className="border-b last:border-0">
-                <td className="p-2">{plan.nom}</td>
-                <td className="p-2 break-all">{plan.excel_path}</td>
-                <td className="p-2">{plan.excel_sheet}</td>
-                <td className="p-2">{plan.header_row_index}</td>
-                <td className="p-2">{plan.actif ? 'Oui' : 'Non'}</td>
-                <td className="p-2 space-x-2">
-                  {hasRole('SuperAdmin', 'PiloteProcessus') && (
-                    <Link
-                      to={`/plans/${plan.id}/edit`}
-                      className="px-2 py-1 bg-yellow-400 rounded-2xl"
-                    >
-                      Éditer
-                    </Link>
-                  )}
-                  {hasRole('SuperAdmin', 'PiloteProcessus') && (
-                    <button
-                      onClick={() => handleRescan(plan.id)}
-                      className="px-2 py-1 bg-purple-500 text-white rounded-2xl"
-                    >
-                      Rescan
-                    </button>
-                  )}
-                  {(hasRole('SuperAdmin', 'PiloteProcessus') ||
-                    (hasRole('Pilote') && user.plans_autorises.includes(plan.id))) && (
-                    <button
-                      onClick={() => handlePreview(plan.id)}
-                      className="px-2 py-1 bg-green-500 text-white rounded-2xl"
-                    >
-                      Preview
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <p>Aucun plan</p>
       )}
 
       {(previewLoading || preview) && (

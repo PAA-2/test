@@ -27,10 +27,7 @@ function App() {
         <Route path="/actions/assistant" element={<Assistant />} />
         <Route path="/actions/:actId" element={<ActionDetail />} />
         <Route path="/actions/:actId/edit" element={<ActionEdit />} />
-        <Route
-          path="/plans"
-          element={<ProtectedRoute roles={['SuperAdmin', 'PiloteProcessus', 'Pilote']}><PlansIndex /></ProtectedRoute>}
-        />
+        <Route path="/plans" element={<ProtectedRoute><PlansIndex /></ProtectedRoute>} />
         <Route
           path="/plans/new"
           element={<ProtectedRoute roles={['SuperAdmin', 'PiloteProcessus']}><PlanEdit /></ProtectedRoute>}
