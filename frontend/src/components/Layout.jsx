@@ -17,7 +17,12 @@ export default function Layout() {
         <Link to="/actions/assistant">Assistante</Link>
         {hasRole('SuperAdmin', 'PiloteProcessus', 'Pilote') && <Link to="/plans">Plans</Link>}
         {hasRole('SuperAdmin', 'PiloteProcessus') && <Link to="/reports">Rapports</Link>}
-        {hasRole('SuperAdmin') && <Link to="/admin">Admin</Link>}
+        {hasRole('SuperAdmin', 'PiloteProcessus') && (
+          <>
+            <Link to="/admin">Admin</Link>
+            <Link to="/admin/custom-fields">Champs personnalisés</Link>
+          </>
+        )}
         <div className="ml-auto flex items-center gap-4">
           {user && <span>{user.username}</span>}
           <button onClick={logout} className="rounded-2xl px-3 py-1 bg-red-500 text-white">Déconnexion</button>

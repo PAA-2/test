@@ -92,8 +92,26 @@ export const getCustomFieldsSchema = async () => {
   return data
 }
 
-export const listCustomFields = async () => {
-  const { data } = await api.get('/admin/custom-fields')
+export const listCustomFields = async (params = {}) => {
+  const { data } = await api.get('/admin/custom-fields', { params })
+  return data
+}
+
+export const createCustomField = async (payload) => {
+  const { data } = await api.post('/admin/custom-fields', payload)
+  customFieldsSchemaCache = null
+  return data
+}
+
+export const updateCustomField = async (id, payload) => {
+  const { data } = await api.put(`/admin/custom-fields/${id}`, payload)
+  customFieldsSchemaCache = null
+  return data
+}
+
+export const deleteCustomField = async (id) => {
+  const { data } = await api.delete(`/admin/custom-fields/${id}`)
+  customFieldsSchemaCache = null
   return data
 }
 
