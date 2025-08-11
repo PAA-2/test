@@ -9,7 +9,14 @@ User = get_user_model()
 class PlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = Plan
-        fields = ["id", "nom", "excel_path", "excel_sheet", "header_row_index"]
+        fields = [
+            "id",
+            "nom",
+            "excel_path",
+            "excel_sheet",
+            "header_row_index",
+            "actif",
+        ]
 
 
 class ActionSerializer(serializers.ModelSerializer):
@@ -31,8 +38,9 @@ class ActionSerializer(serializers.ModelSerializer):
             "c",
             "a",
             "j",
-            "date_debut",
-            "date_fin",
+            "date_creation",
+            "delais",
+            "date_realisation",
             "commentaire",
             "plan",
             "excel_fichier",
