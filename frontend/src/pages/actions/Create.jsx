@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createAction } from '../../lib/api.js'
+import { useToast } from '../../components/Toast.jsx'
 
 export default function ActionCreate() {
     const [form, setForm] = useState({
@@ -15,6 +16,7 @@ export default function ActionCreate() {
     })
     const navigate = useNavigate()
     const [error, setError] = useState(null)
+    const { show } = useToast()
 
     const handleChange = (e) => {
       const { name, value, checked } = e.target
@@ -46,12 +48,15 @@ export default function ActionCreate() {
       }
       try {
         const data = await createAction(payload)
+        show('Action créée')
         navigate(`/actions/${data.act_id}`)
       } catch (err) {
         if (err.response && err.response.status === 400) {
           setError('Erreur de validation')
+          show('Erreur de validation', 'error')
         } else {
           setError('Erreur de création')
+          show('Erreur de création', 'error')
         }
       }
     }

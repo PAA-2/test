@@ -12,6 +12,26 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('token')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  },
+)
+
+export const logout = () => {
+  localStorage.removeItem('token')
+}
+
+export const getCurrentUser = async () => {
+  const { data } = await api.get('/users/me')
+  return data
+}
+
 export const getPlans = async () => {
   const { data } = await api.get('/plans')
   return data
