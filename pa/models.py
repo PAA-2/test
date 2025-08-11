@@ -61,3 +61,14 @@ class Profile(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user} ({self.role})"
+
+
+class NotificationTemplate(models.Model):
+    name = models.CharField(max_length=100)
+    subject = models.CharField(max_length=255)
+    body_html = models.TextField(blank=True)
+    body_text = models.TextField(blank=True)
+    is_default = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return self.name

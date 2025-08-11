@@ -134,3 +134,8 @@ REST_FRAMEWORK = {
         "django_filters.rest_framework.DjangoFilterBackend",
     ],
 }
+
+
+# Outlook integration
+OUTLOOK_ENABLED = True
+OUTLOOK_SIGNATURE_NAME = None
