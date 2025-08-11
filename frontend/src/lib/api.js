@@ -114,4 +114,10 @@ export const getComparePlans = async (params = {}, signal) => {
   return data
 }
 
+export const exportActionsExcel = (params = {}) =>
+  api.get('/export/excel', { params, responseType: 'blob' })
+
+export const exportActionsPdf = (params = {}) =>
+  api.get('/export/pdf', { params, responseType: 'blob' })
+
 export default api
