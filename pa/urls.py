@@ -6,6 +6,12 @@ from .views_export import ExportExcelView, ExportPdfView
 from .views_stats import DashboardCounters, ProgressChart, ComparePlansChart
 from .views_notify import LateNotifyView, SummaryNotifyView, CustomNotifyView
 from .views_reports import CustomReportView
+from .views_assistant import (
+    SuggestClosuresView,
+    PrioritizeView,
+    SummarizeView,
+    AssistantScoresView,
+)
 
 router = DefaultRouter()
 router.register(r"plans", PlanViewSet)
@@ -24,4 +30,8 @@ urlpatterns = [
     path("notify/summary", SummaryNotifyView.as_view()),
     path("notify/custom", CustomNotifyView.as_view()),
     path("reports/custom", CustomReportView.as_view()),
+    path("assistant/suggest-closures", SuggestClosuresView.as_view()),
+    path("assistant/prioritize", PrioritizeView.as_view()),
+    path("assistant/summarize", SummarizeView.as_view()),
+    path("assistant/scores", AssistantScoresView.as_view()),
 ]
