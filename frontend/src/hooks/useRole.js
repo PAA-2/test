@@ -13,12 +13,20 @@ export default function useRole() {
     }
   }, [user])
 
-  const hasRole = (...roles) => {
-    return user ? roles.includes(user.role) : false
-  }
+  const hasRole = (...roles) => (user ? roles.includes(user.role) : false)
 
-  const can = () => {
-    return hasRole('SuperAdmin')
+  const can = (action, resource) => {
+    if (!user) return false
+    const matrix = {
+      action: {
+        manage: ['SuperAdmin', 'PiloteProcessus'],
+        validate: ['SuperAdmin', 'PiloteProcessus'],
+        close: ['SuperAdmin', 'PiloteProcessus'],
+        reject: ['SuperAdmin', 'PiloteProcessus'],
+      },
+      admin: { access: ['SuperAdmin'] },
+    }
+    return matrix[resource]?.[action]?.includes(user.role) || false
   }
 
   return { user, hasRole, can }

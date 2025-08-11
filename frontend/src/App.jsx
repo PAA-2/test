@@ -45,7 +45,7 @@ function App() {
         />
         <Route
           path="/admin"
-          element={<ProtectedRoute roles={['SuperAdmin', 'PiloteProcessus']}><AdminIndex /></ProtectedRoute>}
+          element={<ProtectedRoute roles={['SuperAdmin']}><AdminIndex /></ProtectedRoute>}
         />
         <Route
           path="/admin/custom-fields"

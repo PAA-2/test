@@ -3,7 +3,7 @@ import { logout } from '../lib/api.js'
 import useRole from '../hooks/useRole.js'
 
 export default function Layout() {
-  const { user, hasRole } = useRole()
+  const { user, hasRole, can } = useRole()
 
   return (
     <>
@@ -17,11 +17,9 @@ export default function Layout() {
         <Link to="/actions/assistant">Assistante</Link>
         {hasRole('SuperAdmin', 'PiloteProcessus', 'Pilote') && <Link to="/plans">Plans</Link>}
         {hasRole('SuperAdmin', 'PiloteProcessus') && <Link to="/reports">Rapports</Link>}
+        {can('access', 'admin') && <Link to="/admin">Admin</Link>}
         {hasRole('SuperAdmin', 'PiloteProcessus') && (
-          <>
-            <Link to="/admin">Admin</Link>
-            <Link to="/admin/custom-fields">Champs personnalisés</Link>
-          </>
+          <Link to="/admin/custom-fields">Champs personnalisés</Link>
         )}
         <div className="ml-auto flex items-center gap-4">
           {user && <span>{user.username}</span>}

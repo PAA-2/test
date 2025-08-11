@@ -12,7 +12,7 @@ export default function ActionDetail() {
   const [showReject, setShowReject] = useState(false)
   const [motif, setMotif] = useState('')
   const { show } = useToast()
-  const { user, hasRole } = useRole()
+  const { user, hasRole, can } = useRole()
   const [schema, setSchema] = useState(null)
 
   const fetchAction = useCallback(() => {
@@ -32,14 +32,21 @@ export default function ActionDetail() {
     getCustomFieldsSchema().then(setSchema)
   }, [])
 
+  const [forbidden, setForbidden] = useState(false)
+
   const handleValidate = async () => {
     try {
       await api.post(`/actions/${actId}/validate`)
       show('Action validée')
       setAction((prev) => ({ ...prev, c: true, a: true }))
       fetchAction()
-    } catch {
-      show('Erreur de validation', 'error')
+    } catch (e) {
+      if (e.response?.status === 403) {
+        show('Accès refusé', 'error')
+        setForbidden(true)
+      } else {
+        show('Erreur de validation', 'error')
+      }
     }
   }
 
@@ -48,8 +55,13 @@ export default function ActionDetail() {
       await api.post(`/actions/${actId}/close`)
       show('Action clôturée')
       fetchAction()
-    } catch {
-      show('Erreur de clôture', 'error')
+    } catch (e) {
+      if (e.response?.status === 403) {
+        show('Accès refusé', 'error')
+        setForbidden(true)
+      } else {
+        show('Erreur de clôture', 'error')
+      }
     }
   }
 
@@ -60,8 +72,13 @@ export default function ActionDetail() {
       setShowReject(false)
       setMotif('')
       fetchAction()
-    } catch {
-      show('Erreur de rejet', 'error')
+    } catch (e) {
+      if (e.response?.status === 403) {
+        show('Accès refusé', 'error')
+        setForbidden(true)
+      } else {
+        show('Erreur de rejet', 'error')
+      }
     }
   }
 
@@ -69,8 +86,9 @@ export default function ActionDetail() {
   if (error || !action) return <div>{error || 'Action introuvable'}</div>
 
   const canManage =
-    hasRole('SuperAdmin', 'PiloteProcessus') ||
-    (hasRole('Pilote') && user?.plans_autorises?.includes(action.plan))
+    !forbidden &&
+    (can('manage', 'action') ||
+      (hasRole('Pilote') && user?.plans_autorises?.includes(action.plan)))
 
   return (
     <div className="space-y-4">
