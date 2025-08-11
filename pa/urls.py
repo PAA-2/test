@@ -12,10 +12,12 @@ from .views_assistant import (
     SummarizeView,
     AssistantScoresView,
 )
+from .views_custom_fields import CustomFieldViewSet, CustomFieldSchemaView
 
 router = DefaultRouter()
 router.register(r"plans", PlanViewSet)
 router.register(r"actions", ActionViewSet, basename="action")
+router.register(r"admin/custom-fields", CustomFieldViewSet, basename="custom-field")
 
 urlpatterns = [
     *router.urls,
@@ -34,4 +36,5 @@ urlpatterns = [
     path("assistant/prioritize", PrioritizeView.as_view()),
     path("assistant/summarize", SummarizeView.as_view()),
     path("assistant/scores", AssistantScoresView.as_view()),
+    path("admin/custom-fields/schema", CustomFieldSchemaView.as_view()),
 ]

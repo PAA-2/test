@@ -33,6 +33,7 @@ class Action(models.Model):
     excel_fichier = models.CharField(max_length=255)
     excel_feuille = models.CharField(max_length=255)
     excel_row_index = models.IntegerField()
+    custom = models.JSONField(default=dict, blank=True)
 
     def __str__(self) -> str:
         return f"{self.act_id} - {self.titre}"
@@ -72,3 +73,50 @@ class NotificationTemplate(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class CustomField(models.Model):
+    class Type(models.TextChoices):
+        TEXT = "text", "text"
+        NUMBER = "number", "number"
+        DATE = "date", "date"
+        SELECT = "select", "select"
+        TAGS = "tags", "tags"
+        BOOL = "bool", "bool"
+
+    class Visibility(models.TextChoices):
+        ALL = "All", "All"
+        SA_PP = "SA_PP", "SA_PP"
+        PILOTE = "Pilote", "Pilote"
+        UTILISATEUR = "Utilisateur", "Utilisateur"
+
+    name = models.CharField(max_length=100)
+    key = models.SlugField(unique=True)
+    type = models.CharField(max_length=10, choices=Type.choices)
+    required = models.BooleanField(default=False)
+    min = models.IntegerField(null=True, blank=True)
+    max = models.IntegerField(null=True, blank=True)
+    regex = models.CharField(max_length=255, blank=True)
+    help_text = models.CharField(max_length=255, blank=True)
+    role_visibility = models.CharField(
+        max_length=20, choices=Visibility.choices, default=Visibility.ALL
+    )
+    active = models.BooleanField(default=True)
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class CustomFieldOption(models.Model):
+    field = models.ForeignKey(
+        CustomField, on_delete=models.CASCADE, related_name="options"
+    )
+    value = models.CharField(max_length=100)
+    label = models.CharField(max_length=100)
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self) -> str:
+        return f"{self.field.key}:{self.value}"
