@@ -54,6 +54,31 @@ export const getPlans = async () => {
   return data
 }
 
+export const getPlan = async (id) => {
+  const { data } = await api.get(`/plans/${id}`)
+  return data
+}
+
+export const createPlan = async (payload) => {
+  const { data } = await api.post('/plans', payload)
+  return data
+}
+
+export const updatePlan = async (id, payload) => {
+  const { data } = await api.put(`/plans/${id}`, payload)
+  return data
+}
+
+export const rescanPlan = async (id) => {
+  const { data } = await api.post(`/plans/${id}/rescan`)
+  return data
+}
+
+export const previewPlan = async (id) => {
+  const { data } = await api.get('/excel/preview', { params: { plan: id } })
+  return data
+}
+
 export const getActions = async ({ page = 1, pageSize = 10, ordering = '', filters = {} } = {}) => {
   const params = {
     page,

@@ -6,6 +6,7 @@ import ActionsList from './pages/actions/List.jsx'
 import ActionCreate from './pages/actions/Create.jsx'
 import ActionDetail from './pages/actions/Detail.jsx'
 import PlansIndex from './pages/plans/Index.jsx'
+import PlanEdit from './pages/plans/Edit.jsx'
 import AdminIndex from './pages/admin/Index.jsx'
 import Login from './pages/auth/Login.jsx'
 import Forbidden403 from './pages/errors/Forbidden403.jsx'
@@ -19,7 +20,18 @@ function App() {
         <Route path="/actions" element={<ActionsList />} />
         <Route path="/actions/new" element={<ActionCreate />} />
         <Route path="/actions/:actId" element={<ActionDetail />} />
-        <Route path="/plans" element={<PlansIndex />} />
+        <Route
+          path="/plans"
+          element={<ProtectedRoute roles={['SuperAdmin', 'PiloteProcessus', 'Pilote']}><PlansIndex /></ProtectedRoute>}
+        />
+        <Route
+          path="/plans/new"
+          element={<ProtectedRoute roles={['SuperAdmin', 'PiloteProcessus']}><PlanEdit /></ProtectedRoute>}
+        />
+        <Route
+          path="/plans/:planId/edit"
+          element={<ProtectedRoute roles={['SuperAdmin', 'PiloteProcessus']}><PlanEdit /></ProtectedRoute>}
+        />
         <Route path="/admin" element={<ProtectedRoute roles={['SuperAdmin']}><AdminIndex /></ProtectedRoute>} />
       </Route>
       <Route path="/403" element={<Forbidden403 />} />
