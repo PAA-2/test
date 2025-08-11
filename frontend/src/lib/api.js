@@ -123,4 +123,15 @@ export const exportActionsPdf = (params = {}) =>
 export const postCustomReport = (payload, { responseType = 'blob' } = {}) =>
   api.post('/reports/custom', payload, { responseType })
 
+export const assistantSuggestClosures = ({ filters = {}, limit = 20 } = {}) =>
+  api.post('/assistant/suggest-closures', { filters, limit })
+
+export const assistantPrioritize = ({ filters = {}, limit = 50 } = {}) =>
+  api.post('/assistant/prioritize', { filters, limit })
+
+export const assistantSummarize = ({ filters = {} } = {}) =>
+  api.post('/assistant/summarize', { filters })
+
+export const assistantGetScores = () => api.get('/assistant/scores')
+
 export default api

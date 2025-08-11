@@ -14,6 +14,7 @@ export default function Layout() {
         </Link>
         <Link to="/">Dashboard</Link>
         <Link to="/actions">Actions</Link>
+        <Link to="/actions/assistant">Assistante</Link>
         {hasRole('SuperAdmin', 'PiloteProcessus', 'Pilote') && <Link to="/plans">Plans</Link>}
         {hasRole('SuperAdmin', 'PiloteProcessus') && <Link to="/reports">Rapports</Link>}
         {hasRole('SuperAdmin') && <Link to="/admin">Admin</Link>}

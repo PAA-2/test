@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard.jsx'
 import ActionsList from './pages/actions/List.jsx'
 import ActionCreate from './pages/actions/Create.jsx'
 import ActionDetail from './pages/actions/Detail.jsx'
+import Assistant from './pages/actions/Assistant.jsx'
 import PlansIndex from './pages/plans/Index.jsx'
 import PlanEdit from './pages/plans/Edit.jsx'
 import AdminIndex from './pages/admin/Index.jsx'
@@ -20,6 +21,7 @@ function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/actions" element={<ActionsList />} />
         <Route path="/actions/new" element={<ActionCreate />} />
+        <Route path="/actions/assistant" element={<Assistant />} />
         <Route path="/actions/:actId" element={<ActionDetail />} />
         <Route
           path="/plans"
