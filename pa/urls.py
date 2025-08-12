@@ -12,6 +12,7 @@ from .views_assistant import (
     SummarizeView,
     AssistantScoresView,
 )
+from .views_sync import SyncStatusView, SyncConfigView, SyncRunView, SyncJobsView
 from .views_custom_fields import CustomFieldViewSet, CustomFieldSchemaView
 
 router = DefaultRouter()
@@ -37,4 +38,8 @@ urlpatterns = [
     path("assistant/summarize", SummarizeView.as_view()),
     path("assistant/scores", AssistantScoresView.as_view()),
     path("admin/custom-fields/schema", CustomFieldSchemaView.as_view()),
+    path("sync/status", SyncStatusView.as_view()),
+    path("sync/config", SyncConfigView.as_view()),
+    path("sync/run", SyncRunView.as_view()),
+    path("sync/jobs", SyncJobsView.as_view()),
 ]

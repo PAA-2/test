@@ -6,6 +6,8 @@ pandas>=2.0
 openpyxl>=3.1
 reportlab>=4.2
 django-cors-headers>=4.4
+apscheduler>=3.10
+PyPDF2>=3.0
 # Optionnels:
 # pywin32>=306           # notifications Outlook locales (Windows seulement)
 # psycopg2-binary>=2.9   # si vous passez à PostgreSQL

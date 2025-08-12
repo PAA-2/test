@@ -120,3 +120,41 @@ class CustomFieldOption(models.Model):
 
     def __str__(self) -> str:
         return f"{self.field.key}:{self.value}"
+
+
+class SyncConfig(models.Model):
+    class Strategy(models.TextChoices):
+        PLAN = "plan", "plan"
+        ALL = "all", "all"
+        ACTIVE = "active", "active"
+
+    enabled = models.BooleanField(default=True)
+    cron = models.CharField(max_length=100, default=settings.SYNC_DEFAULT_CRON)
+    strategy = models.CharField(
+        max_length=10, choices=Strategy.choices, default=Strategy.ALL
+    )
+    batch_size = models.IntegerField(default=settings.SYNC_BATCH_SIZE)
+    retry_on_lock = models.BooleanField(default=True)
+    last_run = models.DateTimeField(null=True, blank=True)
+    last_status = models.CharField(max_length=10, blank=True)
+    notes = models.TextField(blank=True)
+
+    def __str__(self) -> str:
+        return f"SyncConfig({self.cron})"
+
+
+class SyncJob(models.Model):
+    class Status(models.TextChoices):
+        OK = "OK", "OK"
+        FAIL = "FAIL", "FAIL"
+        PARTIAL = "PARTIAL", "PARTIAL"
+
+    created = models.DateTimeField(auto_now_add=True)
+    plan = models.ForeignKey(Plan, null=True, blank=True, on_delete=models.SET_NULL)
+    status = models.CharField(max_length=10, choices=Status.choices)
+    stats = models.JSONField(default=dict, blank=True)
+    dry_run = models.BooleanField(default=False)
+    error = models.TextField(blank=True)
+
+    def __str__(self) -> str:
+        return f"SyncJob({self.status})"

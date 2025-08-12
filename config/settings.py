@@ -139,3 +139,8 @@ REST_FRAMEWORK = {
 # Outlook integration
 OUTLOOK_ENABLED = True
 OUTLOOK_SIGNATURE_NAME = None
+
+# Synchronisation Excel
+SYNC_DEFAULT_CRON = "*/30 * * * *"
+SYNC_BATCH_SIZE = 500
+SYNC_ALERTS_ENABLED = True
