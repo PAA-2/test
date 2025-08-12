@@ -14,12 +14,13 @@ export default function StatsFilterBar() {
 
   const update = (key) => (e) => {
     const value = e.target.value
+    const next = new URLSearchParams(params)
     if (value) {
-      params.set(key, value)
+      next.set(key, value)
     } else {
-      params.delete(key)
+      next.delete(key)
     }
-    setParams(params)
+    setParams(next)
   }
 
   const reset = () => setParams({})
