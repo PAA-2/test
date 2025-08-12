@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from .models import Action, Profile
 from .permissions import RolePermission
-from .assistant import compute_score, DEFAULT_WEIGHTS
+from .assistant import compute_score, get_weights
 
 
 def get_authorized_actions(user, filters):
@@ -55,9 +55,10 @@ class SuggestClosuresView(BaseAssistantView):
             Q(statut__in=["En cours", "En traitement"]) &
             (Q(date_realisation__isnull=False) | (Q(j_calc__gte=0) & Q(p=True, d=True)))
         )
+        weights = get_weights()
         results = []
         for act in qs:
-            score, parts = compute_score(act)
+            score, parts = compute_score(act, weights)
             reasons = []
             if parts["delay"]:
                 reasons.append("retard" if (getattr(act, "j", None) or getattr(act, "j_calc", 0)) < 0 else "deadline proche")
@@ -89,9 +90,10 @@ class PrioritizeView(BaseAssistantView):
         filters = data.get("filters", {})
         limit = int(data.get("limit", 50))
         qs = annotate_with_j(get_authorized_actions(request.user, filters))
+        weights = get_weights()
         results = []
         for act in qs:
-            score, parts = compute_score(act)
+            score, parts = compute_score(act, weights)
             results.append(
                 {
                     "act_id": act.act_id,
@@ -147,6 +149,3 @@ class SummarizeView(BaseAssistantView):
         )
 
 
-class AssistantScoresView(BaseAssistantView):
-    def get(self, request):
-        return Response({"weights": DEFAULT_WEIGHTS})

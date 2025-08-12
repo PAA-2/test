@@ -1,6 +1,22 @@
 from datetime import date
 
+from .models import AssistantWeights
+
 DEFAULT_WEIGHTS = {"delay": 2, "priority": 1, "status": 1, "pdca": 1}
+
+
+def get_weights():
+    obj, _ = AssistantWeights.objects.get_or_create(id=1, defaults=DEFAULT_WEIGHTS)
+    return obj.as_dict()
+
+
+def update_weights(data):
+    obj, _ = AssistantWeights.objects.get_or_create(id=1, defaults=DEFAULT_WEIGHTS)
+    for k in DEFAULT_WEIGHTS.keys():
+        if k in data:
+            setattr(obj, k, data[k])
+    obj.save()
+    return obj.as_dict()
 
 
 def _get_j(action):

@@ -170,6 +170,27 @@ export const assistantSummarize = ({ filters = {} } = {}) =>
 
 export const assistantGetScores = () => api.get('/assistant/scores')
 
+export const assistantExplain = ({ act_ids, filters = {} }) =>
+  api.post('/assistant/explain', { act_ids, filters })
+
+export const assistantBatchValidate = (payload) =>
+  api.post('/assistant/batch-validate', payload)
+
+export const assistantBatchClose = (payload) =>
+  api.post('/assistant/batch-close', payload)
+
+export const assistantBatchReject = (payload) =>
+  api.post('/assistant/batch-reject', payload)
+
+export const assistantSuggestFields = (payload) =>
+  api.post('/assistant/suggest-fields', payload)
+
+export const assistantPutScores = (weights) =>
+  api.put('/assistant/scores', { weights })
+
+export const assistantScheduleReminders = (payload) =>
+  api.post('/assistant/schedule-reminders', payload)
+
 export const qualityRun = ({ filters = {}, only_rules = [], dry_run = true } = {}) =>
   api.post('/quality/run', { filters, only_rules, dry_run })
 

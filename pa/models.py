@@ -296,3 +296,19 @@ class MenuItem(models.Model):
 
     def __str__(self) -> str:
         return self.label
+
+
+class AssistantWeights(models.Model):
+    delay = models.IntegerField(default=2)
+    priority = models.IntegerField(default=1)
+    status = models.IntegerField(default=1)
+    pdca = models.IntegerField(default=1)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def as_dict(self):
+        return {
+            "delay": self.delay,
+            "priority": self.priority,
+            "status": self.status,
+            "pdca": self.pdca,
+        }

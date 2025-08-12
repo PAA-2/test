@@ -11,7 +11,15 @@ from .views_assistant import (
     SuggestClosuresView,
     PrioritizeView,
     SummarizeView,
+)
+from .views_assistant_v2 import (
     AssistantScoresView,
+    ExplainView,
+    BatchValidateView,
+    BatchCloseView,
+    BatchRejectView,
+    SuggestFieldsView,
+    ScheduleRemindersView,
 )
 from .views_sync import SyncStatusView, SyncConfigView, SyncRunView, SyncJobsView
 from .views_custom_fields import CustomFieldViewSet, CustomFieldSchemaView
@@ -57,6 +65,12 @@ urlpatterns = [
     path("assistant/prioritize", PrioritizeView.as_view()),
     path("assistant/summarize", SummarizeView.as_view()),
     path("assistant/scores", AssistantScoresView.as_view()),
+    path("assistant/explain", ExplainView.as_view()),
+    path("assistant/batch-validate", BatchValidateView.as_view()),
+    path("assistant/batch-close", BatchCloseView.as_view()),
+    path("assistant/batch-reject", BatchRejectView.as_view()),
+    path("assistant/suggest-fields", SuggestFieldsView.as_view()),
+    path("assistant/schedule-reminders", ScheduleRemindersView.as_view()),
     path("admin/custom-fields/schema", CustomFieldSchemaView.as_view()),
     path("sync/status", SyncStatusView.as_view()),
     path("sync/config", SyncConfigView.as_view()),
