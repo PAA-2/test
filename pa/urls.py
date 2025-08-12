@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from .views import PlanViewSet, ActionViewSet, ExcelPreview, ExcelRefresh
-from .views_export import ExportExcelView, ExportPdfView
+from .views_exports import ExportExcelView, ExportPdfView
 from .views_stats import DashboardCounters, ProgressChart, ComparePlansChart
 from .views_ops import HealthView
 from .views_notify import LateNotifyView, SummaryNotifyView, CustomNotifyView

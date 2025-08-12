@@ -4,8 +4,8 @@ import FilterBar from '../../components/FilterBar.jsx'
 import DataTable from '../../components/DataTable.jsx'
 import {
   getActions,
-  exportActionsExcel,
-  exportActionsPdf,
+  exportExcel,
+  exportPdf,
 } from '../../lib/api.js'
 import { downloadBlob } from '../../lib/download.js'
 import { useToast } from '../../components/Toast.jsx'
@@ -66,7 +66,7 @@ export default function ActionsList() {
     const filters = buildFilters()
     setDownloadingExcel(true)
     try {
-      const response = await exportActionsExcel(filters)
+      const response = await exportExcel(filters)
       if (response?.data instanceof Blob) {
         downloadBlob(response, 'actions.xlsx')
         show('Export lancé. Votre téléchargement va démarrer.')
@@ -85,7 +85,7 @@ export default function ActionsList() {
     const filters = buildFilters()
     setDownloadingPdf(true)
     try {
-      const response = await exportActionsPdf(filters)
+      const response = await exportPdf(filters)
       if (response?.data instanceof Blob) {
         downloadBlob(response, 'actions.pdf')
         show('Export lancé. Votre téléchargement va démarrer.')

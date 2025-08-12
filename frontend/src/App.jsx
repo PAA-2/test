@@ -19,7 +19,7 @@ import AutomationEdit from './pages/admin/automations/Edit.jsx'
 import MenusList from './pages/admin/menus/List.jsx'
 import Login from './pages/auth/Login.jsx'
 import Forbidden403 from './pages/errors/Forbidden403.jsx'
-import ReportsBuilder from './pages/reports/Builder.jsx'
+import ReportsCustom from './pages/reports/Custom.jsx'
 import QualityIndex from './pages/quality/Index.jsx'
 
 function App() {
@@ -43,8 +43,8 @@ function App() {
           element={<ProtectedRoute roles={['SuperAdmin', 'PiloteProcessus']}><PlanEdit /></ProtectedRoute>}
         />
         <Route
-          path="/reports"
-          element={<ProtectedRoute roles={['SuperAdmin', 'PiloteProcessus', 'Pilote']}><ReportsBuilder /></ProtectedRoute>}
+          path="/reports/custom"
+          element={<ProtectedRoute roles={['SuperAdmin', 'PiloteProcessus', 'Pilote']}><ReportsCustom /></ProtectedRoute>}
         />
         <Route
           path="/quality"

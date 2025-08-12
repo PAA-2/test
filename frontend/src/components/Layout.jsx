@@ -10,7 +10,13 @@ export default function Layout() {
   useEffect(() => {
     getEffectiveMenu()
       .then((d) => setMenu(d.items))
-      .catch(() => setMenu([{ label: 'Dashboard', path: '/' }, { label: 'Actions', path: '/actions' }]))
+      .catch(() =>
+        setMenu([
+          { label: 'Dashboard', path: '/' },
+          { label: 'Actions', path: '/actions' },
+          { label: 'Rapports', path: '/reports/custom' }
+        ])
+      )
   }, [])
 
   return (

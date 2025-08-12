@@ -150,13 +150,13 @@ export const getComparePlans = async (params = {}, signal) => {
   return data
 }
 
-export const exportActionsExcel = (params = {}) =>
+export const exportExcel = (params = {}) =>
   api.get('/export/excel', { params, responseType: 'blob' })
 
-export const exportActionsPdf = (params = {}) =>
+export const exportPdf = (params = {}) =>
   api.get('/export/pdf', { params, responseType: 'blob' })
 
-export const postCustomReport = (payload, { responseType = 'blob' } = {}) =>
+export const createCustomReport = (payload, { responseType = 'blob' } = {}) =>
   api.post('/reports/custom', payload, { responseType })
 
 export const assistantSuggestClosures = ({ filters = {}, limit = 20 } = {}) =>

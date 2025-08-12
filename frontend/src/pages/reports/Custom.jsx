@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { getPlans, postCustomReport } from '../../lib/api.js'
+import { getPlans, createCustomReport } from '../../lib/api.js'
 import { downloadBlob } from '../../lib/download.js'
 import { useToast } from '../../components/Toast.jsx'
 import Skeleton from '../../components/Skeleton.jsx'
@@ -77,7 +77,7 @@ export default function ReportsBuilder() {
     try {
       const payload = buildPayload()
       payload.dry_run = true
-      const { data } = await postCustomReport(payload, { responseType: 'json' })
+      const { data } = await createCustomReport(payload, { responseType: 'json' })
       setPreview(data)
       show('Prévisualisation générée')
     } catch (err) {
@@ -91,7 +91,7 @@ export default function ReportsBuilder() {
     setLoadingPdf(true)
     try {
       const payload = buildPayload()
-      const response = await postCustomReport(payload)
+      const response = await createCustomReport(payload)
       downloadBlob(response, 'rapport_paa.pdf')
       show('Export lancé. Votre téléchargement va démarrer.')
     } catch (err) {

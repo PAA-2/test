@@ -10,7 +10,7 @@ from ..models import (
     DataQualityRule,
     DataQualityIssue,
 )
-from ..exporters import build_actions_queryset
+from .exports import query_actions_for_export
 
 
 def _plans_for_user(user):
@@ -113,7 +113,7 @@ def run_quality_checks(user, filters=None, only_rules=None, dry_run=False):
                 },
             )()
         user_for_qs = Dummy()
-    actions = build_actions_queryset(user_for_qs, filters)
+    actions = query_actions_for_export(user_for_qs, filters)
     plans = _plans_for_user(user_for_qs)
     if filters.get("plan"):
         plans = plans.filter(id=filters.get("plan"))
