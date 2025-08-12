@@ -6,9 +6,10 @@ class PaConfig(AppConfig):
     name = "pa"
 
     def ready(self):
-        from .scheduler import schedule_from_config
+        from .scheduler import schedule_from_config, schedule_quality_job
 
         try:
             schedule_from_config()
+            schedule_quality_job()
         except Exception:
             pass

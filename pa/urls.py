@@ -14,6 +14,14 @@ from .views_assistant import (
 )
 from .views_sync import SyncStatusView, SyncConfigView, SyncRunView, SyncJobsView
 from .views_custom_fields import CustomFieldViewSet, CustomFieldSchemaView
+from .views_quality import (
+    QualityRunView,
+    QualityIssuesListView,
+    QualityIssueResolveView,
+    QualityIssueIgnoreView,
+    QualityRulesView,
+    QualityRuleDetailView,
+)
 
 router = DefaultRouter()
 router.register(r"plans", PlanViewSet)
@@ -42,4 +50,10 @@ urlpatterns = [
     path("sync/config", SyncConfigView.as_view()),
     path("sync/run", SyncRunView.as_view()),
     path("sync/jobs", SyncJobsView.as_view()),
+    path("quality/run", QualityRunView.as_view()),
+    path("quality/issues", QualityIssuesListView.as_view()),
+    path("quality/issues/<int:pk>/resolve", QualityIssueResolveView.as_view()),
+    path("quality/issues/<int:pk>/ignore", QualityIssueIgnoreView.as_view()),
+    path("quality/rules", QualityRulesView.as_view()),
+    path("quality/rules/<int:pk>", QualityRuleDetailView.as_view()),
 ]

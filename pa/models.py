@@ -158,3 +158,64 @@ class SyncJob(models.Model):
 
     def __str__(self) -> str:
         return f"SyncJob({self.status})"
+
+
+class DataQualityRule(models.Model):
+    class Severity(models.TextChoices):
+        LOW = "LOW", "LOW"
+        MED = "MED", "MED"
+        HIGH = "HIGH", "HIGH"
+        CRITICAL = "CRITICAL", "CRITICAL"
+
+    class Scope(models.TextChoices):
+        ACTION = "action", "action"
+        PLAN = "plan", "plan"
+        EXCEL = "excel", "excel"
+
+    key = models.SlugField(unique=True)
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    severity = models.CharField(max_length=10, choices=Severity.choices)
+    enabled = models.BooleanField(default=True)
+    params = models.JSONField(default=dict, blank=True)
+    scope = models.CharField(max_length=10, choices=Scope.choices)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class DataQualityIssue(models.Model):
+    class Status(models.TextChoices):
+        OPEN = "OPEN", "OPEN"
+        RESOLVED = "RESOLVED", "RESOLVED"
+        IGNORED = "IGNORED", "IGNORED"
+
+    rule_key = models.CharField(max_length=100)
+    severity = models.CharField(max_length=10, choices=DataQualityRule.Severity.choices)
+    entity_type = models.CharField(max_length=10, choices=[("action", "action"), ("plan", "plan")])
+    action = models.ForeignKey("Action", null=True, blank=True, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, null=True, blank=True, on_delete=models.CASCADE)
+    message = models.CharField(max_length=255)
+    details = models.JSONField(default=dict, blank=True)
+    detected_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.OPEN)
+    resolved_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL
+    )
+    resolved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = (
+            "rule_key",
+            "entity_type",
+            "action",
+            "plan",
+            "message",
+        )
+
+    def __str__(self) -> str:
+        if self.entity_type == "plan":
+            return f"{self.rule_key} - {self.plan_id}"
+        return f"{self.rule_key} - {self.action_id}"

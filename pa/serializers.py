@@ -1,7 +1,15 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models import Action, Plan, CustomField, CustomFieldOption
+from .models import (
+    Action,
+    Plan,
+    CustomField,
+    CustomFieldOption,
+    DataQualityRule,
+    DataQualityIssue,
+)
 from .custom_fields import (
     load_definitions_for_role,
     validate_custom_payload,
@@ -112,3 +120,35 @@ class CustomFieldSerializer(serializers.ModelSerializer):
             for opt in options:
                 CustomFieldOption.objects.create(field=instance, **opt)
         return field
+
+
+class DataQualityRuleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DataQualityRule
+        fields = [
+            "id",
+            "key",
+            "name",
+            "description",
+            "severity",
+            "enabled",
+            "params",
+            "scope",
+        ]
+
+
+class DataQualityIssueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DataQualityIssue
+        fields = [
+            "id",
+            "rule_key",
+            "severity",
+            "entity_type",
+            "action",
+            "plan",
+            "message",
+            "details",
+            "detected_at",
+            "status",
+        ]

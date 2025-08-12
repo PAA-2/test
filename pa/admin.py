@@ -6,6 +6,8 @@ from .models import (
     CustomFieldOption,
     SyncConfig,
     SyncJob,
+    DataQualityRule,
+    DataQualityIssue,
 )
 
 
@@ -33,3 +35,14 @@ class SyncConfigAdmin(admin.ModelAdmin):
 @admin.register(SyncJob)
 class SyncJobAdmin(admin.ModelAdmin):
     list_display = ("created", "plan", "status", "dry_run")
+
+
+@admin.register(DataQualityRule)
+class DataQualityRuleAdmin(admin.ModelAdmin):
+    list_display = ("key", "name", "severity", "enabled")
+
+
+@admin.register(DataQualityIssue)
+class DataQualityIssueAdmin(admin.ModelAdmin):
+    list_display = ("rule_key", "entity_type", "severity", "status", "detected_at")
+    list_filter = ("severity", "status", "rule_key")
