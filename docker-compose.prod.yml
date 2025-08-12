@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.prod
+    env_file: docker/.env.prod
+    volumes:
+      - ./excel:/excel
+      - staticfiles:/app/staticfiles
+    depends_on:
+      - db
+    command: bash /app/docker/entrypoint.backend.prod.sh
+  web:
+    build:
+      context: frontend
+      dockerfile: Dockerfile.prod
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    volumes:
+      - staticfiles:/usr/share/nginx/html/static
+
+volumes:
+  pgdata:
+  staticfiles:
