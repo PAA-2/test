@@ -1,7 +1,17 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models import Action, Plan, CustomField, CustomFieldOption, DataQualityRule, DataQualityIssue
+from .models import (
+    Action,
+    Plan,
+    CustomField,
+    CustomFieldOption,
+    DataQualityRule,
+    DataQualityIssue,
+    Template,
+    Automation,
+    MenuItem,
+)
 from .custom_fields import (
     load_definitions_for_role,
     validate_custom_payload,
@@ -152,3 +162,64 @@ class DataQualityIssueSerializer(serializers.ModelSerializer):
             "resolved_by",
             "resolved_at",
         ]
+
+
+class TemplateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Template
+        fields = [
+            "id",
+            "name",
+            "kind",
+            "subject",
+            "body_html",
+            "body_text",
+            "variables",
+            "is_default",
+            "active",
+        ]
+
+    def validate(self, attrs):
+        kind = attrs.get("kind") or (self.instance.kind if self.instance else None)
+        if kind == "email" and not attrs.get("subject") and not (self.instance and self.instance.subject):
+            raise serializers.ValidationError({"subject": "required for email"})
+        return attrs
+
+
+class AutomationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Automation
+        fields = [
+            "id",
+            "name",
+            "enabled",
+            "trigger",
+            "cron",
+            "filters",
+            "condition",
+            "action",
+            "action_params",
+            "last_run_at",
+            "last_status",
+            "last_message",
+        ]
+
+
+class MenuItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MenuItem
+        fields = [
+            "id",
+            "key",
+            "label",
+            "icon",
+            "path",
+            "visible_for_roles",
+            "order",
+            "active",
+        ]
+
+    def validate_order(self, value):
+        if not isinstance(value, int):
+            raise serializers.ValidationError("order must be integer")
+        return value

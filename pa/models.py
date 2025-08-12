@@ -231,3 +231,68 @@ class DataQualityIssue(models.Model):
 
     def __str__(self) -> str:
         return f"{self.rule_key}:{self.entity_type}:{self.act_id or self.entity_id}"
+
+class Template(models.Model):
+    class Kind(models.TextChoices):
+        EMAIL = "email", "email"
+        REPORT = "report", "report"
+
+    name = models.CharField(max_length=100, unique=True)
+    kind = models.CharField(max_length=10, choices=Kind.choices)
+    subject = models.CharField(max_length=255, blank=True)
+    body_html = models.TextField()
+    body_text = models.TextField(blank=True)
+    variables = models.JSONField(default=dict, blank=True)
+    is_default = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class Automation(models.Model):
+    class Trigger(models.TextChoices):
+        CRON = "cron", "cron"
+        SYNC_FAIL = "sync_fail", "sync_fail"
+        QUALITY_THRESHOLD = "quality_threshold", "quality_threshold"
+        ACTION_OVERDUE = "action_overdue", "action_overdue"
+        MANUAL = "manual", "manual"
+
+    class Action(models.TextChoices):
+        NOTIFY_EMAIL = "notify_email", "notify_email"
+        RUN_QUALITY = "run_quality", "run_quality"
+        RUN_SYNC = "run_sync", "run_sync"
+        EXPORT_REPORT = "export_report", "export_report"
+
+    name = models.CharField(max_length=100, unique=True)
+    enabled = models.BooleanField(default=True)
+    trigger = models.CharField(max_length=20, choices=Trigger.choices)
+    cron = models.CharField(max_length=100, blank=True)
+    filters = models.JSONField(default=dict, blank=True)
+    condition = models.JSONField(default=dict, blank=True)
+    action = models.CharField(max_length=20, choices=Action.choices)
+    action_params = models.JSONField(default=dict, blank=True)
+    last_run_at = models.DateTimeField(null=True, blank=True)
+    last_status = models.CharField(max_length=10, blank=True)
+    last_message = models.TextField(blank=True)
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class MenuItem(models.Model):
+    key = models.CharField(max_length=50, unique=True)
+    label = models.CharField(max_length=100)
+    icon = models.CharField(max_length=50, blank=True)
+    path = models.CharField(max_length=255)
+    visible_for_roles = models.JSONField(default=list)
+    order = models.IntegerField(default=0)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self) -> str:
+        return self.label

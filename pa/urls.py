@@ -23,6 +23,17 @@ from .views_quality import (
     QualityRulesView,
     QualityRuleDetailView,
 )
+from .views_admin import (
+    TemplatesListCreateView,
+    TemplateDetailView,
+    TemplatePreviewView,
+    AutomationsListCreateView,
+    AutomationDetailView,
+    AutomationRunNowView,
+    MenuItemsListCreateView,
+    MenuItemDetailView,
+    EffectiveMenuView,
+)
 
 router = DefaultRouter()
 router.register(r"plans", PlanViewSet)
@@ -57,5 +68,14 @@ urlpatterns = [
     path("quality/issues/<int:pk>/ignore", QualityIssueIgnoreView.as_view()),
     path("quality/rules", QualityRulesView.as_view()),
     path("quality/rules/<int:pk>", QualityRuleDetailView.as_view()),
+    path("admin/templates", TemplatesListCreateView.as_view()),
+    path("admin/templates/<int:pk>", TemplateDetailView.as_view()),
+    path("admin/templates/<int:pk>/preview", TemplatePreviewView.as_view()),
+    path("admin/automations", AutomationsListCreateView.as_view()),
+    path("admin/automations/<int:pk>", AutomationDetailView.as_view()),
+    path("admin/automations/<int:pk>/run", AutomationRunNowView.as_view()),
+    path("admin/menus", MenuItemsListCreateView.as_view()),
+    path("admin/menus/<int:pk>", MenuItemDetailView.as_view()),
+    path("menu", EffectiveMenuView.as_view()),
     path("health", HealthView.as_view()),
 ]

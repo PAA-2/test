@@ -1,9 +1,17 @@
 import { Link, Outlet } from 'react-router-dom'
-import { logout } from '../lib/api.js'
+import { logout, getEffectiveMenu } from '../lib/api.js'
 import useRole from '../hooks/useRole.js'
+import { useEffect, useState } from 'react'
 
 export default function Layout() {
-  const { user, hasRole, can } = useRole()
+  const { user } = useRole()
+  const [menu, setMenu] = useState([])
+
+  useEffect(() => {
+    getEffectiveMenu()
+      .then((d) => setMenu(d.items))
+      .catch(() => setMenu([{ label: 'Dashboard', path: '/' }, { label: 'Actions', path: '/actions' }]))
+  }, [])
 
   return (
     <>
@@ -12,16 +20,11 @@ export default function Layout() {
           <img src="/vite.svg" alt="Logo" className="h-6 w-6" />
           PAA
         </Link>
-        <Link to="/">Dashboard</Link>
-        <Link to="/actions">Actions</Link>
-        <Link to="/actions/assistant">Assistante</Link>
-        <Link to="/plans">Plans</Link>
-        {hasRole('SuperAdmin', 'PiloteProcessus', 'Pilote') && <Link to="/quality">Qualité</Link>}
-        {hasRole('SuperAdmin', 'PiloteProcessus') && <Link to="/reports">Rapports</Link>}
-        {can('access', 'admin') && <Link to="/admin">Admin</Link>}
-        {hasRole('SuperAdmin', 'PiloteProcessus') && (
-          <Link to="/admin/custom-fields">Champs personnalisés</Link>
-        )}
+        {menu.map((m) => (
+          <Link key={m.key} to={m.path}>
+            {m.label}
+          </Link>
+        ))}
         <div className="ml-auto flex items-center gap-4">
           {user && <span>{user.username}</span>}
           <button onClick={logout} className="rounded-2xl px-3 py-1 bg-red-500 text-white">Déconnexion</button>

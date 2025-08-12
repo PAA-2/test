@@ -193,4 +193,49 @@ export const qualityListRules = async () => {
   return data
 }
 
+export const listTemplates = async () => {
+  const { data } = await api.get('/admin/templates')
+  return data
+}
+
+export const getTemplate = async (id) => {
+  const { data } = await api.get(`/admin/templates/${id}`)
+  return data
+}
+
+export const createTemplate = (payload) => api.post('/admin/templates', payload)
+export const updateTemplate = (id, payload) => api.put(`/admin/templates/${id}`, payload)
+export const deleteTemplate = (id) => api.delete(`/admin/templates/${id}`)
+export const previewTemplate = (id, context = {}) =>
+  api.post(`/admin/templates/${id}/preview`, { context })
+
+export const listAutomations = async () => {
+  const { data } = await api.get('/admin/automations')
+  return data
+}
+export const getAutomation = async (id) => {
+  const { data } = await api.get(`/admin/automations/${id}`)
+  return data
+}
+export const createAutomation = (payload) => api.post('/admin/automations', payload)
+export const updateAutomation = (id, payload) => api.put(`/admin/automations/${id}`, payload)
+export const deleteAutomation = (id) => api.delete(`/admin/automations/${id}`)
+export const runAutomation = (id) => api.post(`/admin/automations/${id}/run`)
+
+export const listMenuItems = async () => {
+  const { data } = await api.get('/admin/menus')
+  return data
+}
+export const getMenuItem = async (id) => {
+  const { data } = await api.get(`/admin/menus/${id}`)
+  return data
+}
+export const createMenuItem = (payload) => api.post('/admin/menus', payload)
+export const updateMenuItem = (id, payload) => api.put(`/admin/menus/${id}`, payload)
+export const deleteMenuItem = (id) => api.delete(`/admin/menus/${id}`)
+export const getEffectiveMenu = async () => {
+  const { data } = await api.get('/menu')
+  return data
+}
+
 export default api

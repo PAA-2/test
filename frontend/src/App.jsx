@@ -12,6 +12,11 @@ import PlanEdit from './pages/plans/Edit.jsx'
 import AdminIndex from './pages/admin/Index.jsx'
 import CustomFieldsList from './pages/admin/custom-fields/List.jsx'
 import CustomFieldEdit from './pages/admin/custom-fields/Edit.jsx'
+import TemplatesList from './pages/admin/templates/List.jsx'
+import TemplateEdit from './pages/admin/templates/Edit.jsx'
+import AutomationsList from './pages/admin/automations/List.jsx'
+import AutomationEdit from './pages/admin/automations/Edit.jsx'
+import MenusList from './pages/admin/menus/List.jsx'
 import Login from './pages/auth/Login.jsx'
 import Forbidden403 from './pages/errors/Forbidden403.jsx'
 import ReportsBuilder from './pages/reports/Builder.jsx'
@@ -48,6 +53,34 @@ function App() {
         <Route
           path="/admin"
           element={<ProtectedRoute roles={['SuperAdmin']}><AdminIndex /></ProtectedRoute>}
+        />
+        <Route
+          path="/admin/templates"
+          element={<ProtectedRoute roles={['SuperAdmin', 'PiloteProcessus']}><TemplatesList /></ProtectedRoute>}
+        />
+        <Route
+          path="/admin/templates/new"
+          element={<ProtectedRoute roles={['SuperAdmin', 'PiloteProcessus']}><TemplateEdit /></ProtectedRoute>}
+        />
+        <Route
+          path="/admin/templates/:id"
+          element={<ProtectedRoute roles={['SuperAdmin', 'PiloteProcessus']}><TemplateEdit /></ProtectedRoute>}
+        />
+        <Route
+          path="/admin/automations"
+          element={<ProtectedRoute roles={['SuperAdmin', 'PiloteProcessus']}><AutomationsList /></ProtectedRoute>}
+        />
+        <Route
+          path="/admin/automations/new"
+          element={<ProtectedRoute roles={['SuperAdmin', 'PiloteProcessus']}><AutomationEdit /></ProtectedRoute>}
+        />
+        <Route
+          path="/admin/automations/:id"
+          element={<ProtectedRoute roles={['SuperAdmin', 'PiloteProcessus']}><AutomationEdit /></ProtectedRoute>}
+        />
+        <Route
+          path="/admin/menus"
+          element={<ProtectedRoute roles={['SuperAdmin', 'PiloteProcessus']}><MenusList /></ProtectedRoute>}
         />
         <Route
           path="/admin/custom-fields"

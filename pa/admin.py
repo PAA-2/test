@@ -8,12 +8,20 @@ from .models import (
     SyncJob,
     DataQualityRule,
     DataQualityIssue,
+    Template,
+    Automation,
+    MenuItem,
 )
 
 
 @admin.register(NotificationTemplate)
 class NotificationTemplateAdmin(admin.ModelAdmin):
     list_display = ("name", "is_default")
+
+
+@admin.register(Template)
+class TemplateAdmin(admin.ModelAdmin):
+    list_display = ("name", "kind", "is_default", "active")
 
 
 class CustomFieldOptionInline(admin.TabularInline):
@@ -56,3 +64,13 @@ class DataQualityIssueAdmin(admin.ModelAdmin):
     )
     list_filter = ("severity", "status", "rule_key")
     search_fields = ("act_id", "message", "plan__nom")
+
+
+@admin.register(Automation)
+class AutomationAdmin(admin.ModelAdmin):
+    list_display = ("name", "trigger", "action", "enabled", "last_status")
+
+
+@admin.register(MenuItem)
+class MenuItemAdmin(admin.ModelAdmin):
+    list_display = ("key", "label", "order", "active")
