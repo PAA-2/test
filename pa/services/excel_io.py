@@ -1,7 +1,9 @@
 import logging
+import os
 from typing import List, Dict
 
 import pandas as pd
+from django.conf import settings
 from openpyxl import load_workbook
 
 from pa.models import Plan, Action
@@ -9,10 +11,20 @@ from pa.models import Plan, Action
 logger = logging.getLogger(__name__)
 
 
+def resolve_excel_path(path: str) -> str:
+    if os.path.isabs(path):
+        return path
+    root = getattr(settings, "EXCEL_ROOT", None)
+    if root:
+        return os.path.join(root, path)
+    return path
+
+
 def read_plan(plan: Plan, limit: int = 50) -> List[Dict]:
     """Return a preview of plan actions from the source Excel file."""
+    path = resolve_excel_path(plan.excel_path)
     df = pd.read_excel(
-        plan.excel_path,
+        path,
         sheet_name=plan.excel_sheet,
         header=plan.header_row_index - 1,
     )
@@ -21,7 +33,8 @@ def read_plan(plan: Plan, limit: int = 50) -> List[Dict]:
 
 def write_action(action: Action) -> Action:
     """Write the action back to its Excel source and reload it from disk."""
-    wb = load_workbook(action.excel_fichier)
+    file_path = resolve_excel_path(action.excel_fichier)
+    wb = load_workbook(file_path)
     ws = wb[action.excel_feuille]
     header_row = action.plan.header_row_index
     headers = [cell.value for cell in ws[header_row]]
@@ -37,17 +50,17 @@ def write_action(action: Action) -> Action:
     if "priorite" in col_map:
         ws.cell(row=row, column=col_map["priorite"], value=action.priorite)
 
-    wb.save(action.excel_fichier)
+    wb.save(file_path)
     logger.info(
         "Action %s written to %s[%s] row %s",
         action.act_id,
-        action.excel_fichier,
+        file_path,
         action.excel_feuille,
         action.excel_row_index,
     )
 
     df = pd.read_excel(
-        action.excel_fichier,
+        file_path,
         sheet_name=action.excel_feuille,
         header=action.plan.header_row_index - 1,
     )

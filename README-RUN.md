@@ -8,6 +8,12 @@
 - Double-cliquez `start.bat`
 - Backend: http://localhost:8000  |  Frontend: http://localhost:5173
 
+## Docker (dev)
+- Placez vos fichiers Excel dans `./excel/`
+- `docker compose --env-file docker/.env.docker up -d --build`
+- API: http://localhost:8000  |  Frontend: http://localhost:5173
+- Logs: `docker compose logs -f backend` (ou `frontend`, `db`)
+
 ## Variables d'environnement
 - Frontend: `frontend/.env.local` => `VITE_API_URL=http://localhost:8000/api`
 - Backend (si besoin CORS): ajoutez dans `settings.py`:
@@ -18,6 +24,9 @@ CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
 ## Commandes utiles
 - Backend: `\.venv\Scripts\activate && python manage.py runserver`
 - Frontend: `cd frontend && npm run dev`
+
+### Migration des chemins Excel
+Copiez vos fichiers existants dans `./excel/` et utilisez des `excel_path` relatifs (ex: `F-ELK-494 Plan HSE.xlsx`). Le backend les préfixe avec `EXCEL_ROOT`.
 
 ## Depannage
 - Si l'API renvoie 401: connectez-vous puis re-essayez (S4 gère le refresh token).
