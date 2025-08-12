@@ -24,7 +24,7 @@ class Action(models.Model):
     d = models.BooleanField(default=False)
     c = models.BooleanField(default=False)
     a = models.BooleanField(default=False)
-    j = models.IntegerField(null=True, blank=True)
+    j = models.IntegerField(null=True, blank=True, db_index=True)
     date_creation = models.DateField(null=True, blank=True, db_index=True)
     delais = models.DateField(null=True, blank=True, db_index=True)
     date_realisation = models.DateField(null=True, blank=True, db_index=True)
