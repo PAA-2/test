@@ -47,6 +47,7 @@ export default function QualityIndex() {
       const data = await qualityListIssues(params)
       setIssues(data)
     } catch (e) {
+      console.error(e)
       show('Erreur chargement anomalies', 'error')
     } finally {
       setLoading(false)
