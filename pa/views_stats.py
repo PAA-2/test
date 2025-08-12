@@ -2,16 +2,23 @@ from django.core.cache import cache
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from urllib.parse import urlencode
 
 from .permissions import RolePermission
 from . import charts
+
+
+def make_cache_key(user_id, path, params):
+    serialized = urlencode(sorted(params.items()))
+    return f"user:{user_id}:{path}?{serialized}"
 
 
 class DashboardCounters(APIView):
     permission_classes = [IsAuthenticated, RolePermission]
 
     def get(self, request):
-        key = f"counters:{request.user.id}:{request.get_full_path()}"
+        params = request.query_params.dict()
+        key = make_cache_key(request.user.id, request.path, params)
         data = cache.get(key)
         if data is None:
             data = charts.get_counters(request.user, request.query_params)
@@ -23,7 +30,8 @@ class ProgressChart(APIView):
     permission_classes = [IsAuthenticated, RolePermission]
 
     def get(self, request):
-        key = f"progress:{request.user.id}:{request.get_full_path()}"
+        params = request.query_params.dict()
+        key = make_cache_key(request.user.id, request.path, params)
         data = cache.get(key)
         if data is None:
             start = request.query_params.get("from")
@@ -37,7 +45,8 @@ class ComparePlansChart(APIView):
     permission_classes = [IsAuthenticated, RolePermission]
 
     def get(self, request):
-        key = f"compare:{request.user.id}:{request.get_full_path()}"
+        params = request.query_params.dict()
+        key = make_cache_key(request.user.id, request.path, params)
         data = cache.get(key)
         if data is None:
             only_active = request.query_params.get("only_active", "true").lower() != "false"

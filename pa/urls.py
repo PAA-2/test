@@ -4,6 +4,7 @@ from rest_framework.routers import DefaultRouter
 from .views import PlanViewSet, ActionViewSet, ExcelPreview, ExcelRefresh
 from .views_export import ExportExcelView, ExportPdfView
 from .views_stats import DashboardCounters, ProgressChart, ComparePlansChart
+from .views_ops import HealthView
 from .views_notify import LateNotifyView, SummaryNotifyView, CustomNotifyView
 from .views_reports import CustomReportView
 from .views_assistant import (
@@ -56,4 +57,5 @@ urlpatterns = [
     path("quality/issues/<int:pk>/ignore", QualityIssueIgnoreView.as_view()),
     path("quality/rules", QualityRulesView.as_view()),
     path("quality/rules/<int:pk>", QualityRuleDetailView.as_view()),
+    path("health", HealthView.as_view()),
 ]

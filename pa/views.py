@@ -8,7 +8,8 @@ from rest_framework.views import APIView
 from .models import Plan, Action
 from .serializers import PlanSerializer, ActionSerializer
 from .permissions import RolePermission
-from .filters import ActionFilter
+from .filters import ActionFilter, StrictOrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from .services.excel_io import read_plan, apply_update
 
 
@@ -19,11 +20,30 @@ class PlanViewSet(viewsets.ModelViewSet):
 
 
 class ActionViewSet(viewsets.ModelViewSet):
-    queryset = Action.objects.all()
     serializer_class = ActionSerializer
     permission_classes = [IsAuthenticated, RolePermission]
     lookup_field = "act_id"
     filterset_class = ActionFilter
+    filter_backends = [DjangoFilterBackend, StrictOrderingFilter]
+    ordering_fields = [
+        "act_id",
+        "titre",
+        "priorite",
+        "statut",
+        "delais",
+        "date_creation",
+        "j",
+    ]
+
+    def get_queryset(self):
+        return Action.objects.select_related("plan").prefetch_related("responsables")
+
+    def get_serializer_context(self):
+        ctx = super().get_serializer_context()
+        from .custom_fields import load_definitions_for_role
+
+        ctx["custom_field_defs"] = load_definitions_for_role(self.request.user)
+        return ctx
 
     def perform_update(self, serializer):
         action_obj = serializer.save()

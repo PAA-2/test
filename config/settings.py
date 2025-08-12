@@ -40,17 +40,20 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "django_filters",
+    "corsheaders",
     "pa",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "pa.middleware.RequestLogMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -133,6 +136,11 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
     ],
+    "DEFAULT_PAGINATION_CLASS": "pa.pagination.DefaultPagination",
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {"user": "120/min"},
 }
 
 
@@ -148,3 +156,30 @@ SYNC_ALERTS_ENABLED = True
 # Qualité des données
 QUALITY_DEFAULT_CRON = "0 2 * * *"
 QUALITY_ALERT_THRESHOLD = {"CRITICAL": 1, "HIGH": 10}
+# Cache
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "paa-cache",
+    }
+}
+
+CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
+
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 3600
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {"json": {"format": "%(message)s"}},
+    "handlers": {
+        "console": {"class": "logging.StreamHandler", "formatter": "json"}
+    },
+    "root": {"handlers": ["console"], "level": "INFO"},
+}

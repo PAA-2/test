@@ -58,7 +58,7 @@ class ActionSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         request = self.context.get("request")
         user = getattr(request, "user", None)
-        defs = load_definitions_for_role(user)
+        defs = self.context.get("custom_field_defs") or load_definitions_for_role(user)
         custom_payload = attrs.get("custom", {}) or {}
         attrs["custom"] = validate_custom_payload(custom_payload, defs)
         return super().validate(attrs)
@@ -67,7 +67,8 @@ class ActionSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         request = self.context.get("request")
         user = getattr(request, "user", None)
-        data["custom"] = filter_custom_for_role(instance.custom or {}, user)
+        defs = self.context.get("custom_field_defs")
+        data["custom"] = filter_custom_for_role(instance.custom or {}, user, defs)
         return data
 
 

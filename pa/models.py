@@ -9,12 +9,19 @@ class Plan(models.Model):
     header_row_index = models.IntegerField()
     actif = models.BooleanField(default=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["actif"]),
+            models.Index(fields=["nom"]),
+            models.Index(fields=["excel_path"]),
+        ]
+
     def __str__(self) -> str:
         return self.nom
 
 
 class Action(models.Model):
-    act_id = models.CharField(max_length=9, db_index=True)
+    act_id = models.CharField(max_length=9, unique=True, db_index=True)
     titre = models.CharField(max_length=255)
     statut = models.CharField(max_length=50, db_index=True)
     priorite = models.CharField(max_length=50, db_index=True)
@@ -32,7 +39,7 @@ class Action(models.Model):
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE, related_name="actions", db_index=True)
     excel_fichier = models.CharField(max_length=255)
     excel_feuille = models.CharField(max_length=255)
-    excel_row_index = models.IntegerField()
+    excel_row_index = models.IntegerField(db_index=True)
     custom = models.JSONField(default=dict, blank=True)
 
     def __str__(self) -> str:
@@ -46,6 +53,7 @@ class Action(models.Model):
             models.Index(fields=["date_creation"]),
             models.Index(fields=["date_realisation"]),
             models.Index(fields=["plan"]),
+            models.Index(fields=["excel_row_index"]),
         ]
 
 
@@ -149,9 +157,9 @@ class SyncJob(models.Model):
         FAIL = "FAIL", "FAIL"
         PARTIAL = "PARTIAL", "PARTIAL"
 
-    created = models.DateTimeField(auto_now_add=True)
-    plan = models.ForeignKey(Plan, null=True, blank=True, on_delete=models.SET_NULL)
-    status = models.CharField(max_length=10, choices=Status.choices)
+    created = models.DateTimeField(auto_now_add=True, db_index=True)
+    plan = models.ForeignKey(Plan, null=True, blank=True, on_delete=models.SET_NULL, db_index=True)
+    status = models.CharField(max_length=10, choices=Status.choices, db_index=True)
     stats = models.JSONField(default=dict, blank=True)
     dry_run = models.BooleanField(default=False)
     error = models.TextField(blank=True)
@@ -198,15 +206,15 @@ class DataQualityIssue(models.Model):
         IGNORED = "IGNORED", "IGNORED"
 
     rule_key = models.CharField(max_length=100)
-    severity = models.CharField(max_length=10, choices=Severity.choices)
+    severity = models.CharField(max_length=10, choices=Severity.choices, db_index=True)
     entity_type = models.CharField(max_length=10)
     act_id = models.CharField(max_length=9, null=True, blank=True)
     entity_id = models.IntegerField(null=True, blank=True)
-    plan = models.ForeignKey(Plan, null=True, blank=True, on_delete=models.SET_NULL)
+    plan = models.ForeignKey(Plan, null=True, blank=True, on_delete=models.SET_NULL, db_index=True)
     message = models.TextField()
     details = models.JSONField(default=dict, blank=True)
-    detected_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=10, choices=Status.choices, default=Status.OPEN)
+    detected_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.OPEN, db_index=True)
     resolved_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL
     )

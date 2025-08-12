@@ -92,6 +92,6 @@ def validate_custom_payload(payload: Dict[str, Any], defs: Dict[str, CustomField
     return clean
 
 
-def filter_custom_for_role(data: Dict[str, Any], user) -> Dict[str, Any]:
-    defs = load_definitions_for_role(user)
+def filter_custom_for_role(data: Dict[str, Any], user, defs=None) -> Dict[str, Any]:
+    defs = defs or load_definitions_for_role(user)
     return {k: v for k, v in data.items() if k in defs}

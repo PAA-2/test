@@ -39,7 +39,7 @@ class QualityAPITests(TestCase):
             date_creation=today,
         )
         a2 = Action.objects.create(
-            act_id="ACT-0001",
+            act_id="ACT-0002",
             titre="A2",
             statut="En cours",
             priorite="High",
